@@ -96,6 +96,14 @@ ruleset:
           should:
             - Share cross-cutting data via a typed context or dependency injection instead of drilling.
 
+        # Rationale: Eliminates dead code, avoids unnecessary dependencies, keeps the codebase clean.
+        # Tags: imports, cleanup, lint, exports
+        - title: Remove Unused Code
+          must:
+            - Remove any variable, function, export, or module that is never used (and not imported for side effects).
+            - Never leave unused exports in the codebase.
+            - Eliminate dead code immediately upon detection rather than muting via underscores or pragmas.
+
     - title: Modules & Imports
       rules:
 
@@ -112,6 +120,21 @@ ruleset:
         - title: Remove Unused Variables and Imports
           must:
             - Remove any variable or module that is never used (and not imported for side effects) rather than muting via underscores or pragmas.
+
+        # Rationale: Prevents fragile relative paths, enforces consistent module resolution.
+        # Tags: imports, paths, modules
+        - title: No Parent Directory Traversal in Imports
+          must:
+            - Never use "../" in import paths.
+            - Use absolute imports, module aliases, or package.json#imports configuration instead.
+
+        # Rationale: Simplifies module consumption, centralizes public API, improves discoverability.
+        # Tags: barrel, exports, modules, structure
+        - title: Barrel Files for Directory Exports
+          must:
+            - Create an index.ts (barrel file) in every directory that exports modules.
+            - Re-export all public APIs through the barrel file.
+            - Import from directories via their barrel files rather than reaching into internal files.
 
     - title: JavaScript/TypeScript Idioms
       rules:
@@ -133,7 +156,14 @@ ruleset:
         - title: Pure Functions & Documented Side-Effects
           must:
             - Prefer pure functions by default.
-            - When I/O or external mutation is necessary, document what is modified, why it’s required, and safeguards applied.
+            - When I/O or external mutation is necessary, document what is modified, why it's required, and safeguards applied.
+
+        # Rationale: Type assertions can mask errors; explicit documentation ensures intentional usage.
+        # Tags: typescript, type-safety, assertions, documentation
+        - title: Document Type Assertions
+          must:
+            - Accompany every "as" type assertion with a comment explaining why it's safe and necessary.
+            - Prefer type guards or proper typing over assertions when possible.
 
     - title: Testing
       rules:
@@ -160,6 +190,21 @@ ruleset:
           should:
             - For every edited code file, update the most relevant nearest README.md when behavior or architecture changes; avoid creating duplicates—maintain the single closest, most pertinent README.
             - Verify all modified READMEs remain accurate and consistent.
+
+        # Rationale: Provides immediate context about file purpose, improves navigation and understanding.
+        # Tags: documentation, fileoverview, tsdoc
+        - title: File Overview Documentation
+          must:
+            - Include a @fileoverview JSDoc comment at the top of every source file.
+            - Describe the file's purpose, main exports, and usage context.
+
+        # Rationale: Self-documenting code enables better IDE support, API discovery, and maintenance.
+        # Tags: documentation, tsdoc, jsdoc, api
+        - title: Comprehensive TSDoc/JSDoc Documentation
+          must:
+            - Document every export with /** */ TSDoc comments describing purpose, parameters, returns, and examples.
+            - Document every class, method, and function declaration with /** */ comments, regardless of export status.
+            - Include @param, @returns, @throws, and @example tags where applicable.
 
     - title: Project Layout & Naming
       rules:
